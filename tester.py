@@ -55,34 +55,32 @@ class Generator(object):
 
     def comb_with_replacement(self, itr, r):
         indices = [0 for i in range(r)]
-        final_index = len(indices) - 1
         length = len(itr)
+
+        yield tuple(itr[index] for index in indices)
 
         while sum(indices) != ((length - 1) * len(indices)):
             curr_index = len(indices) - 1
-            while curr_index > 0:
-                if indices[curr_index] >= length - 1:
+            while True:
+                indices[curr_index] += 1
+                if indices[curr_index] >= length:
                     indices[curr_index] = 0
-                    indices[curr_index - 1] += 1
                     curr_index -= 1
                 else:
-                    indices[curr_index] += 1
-                print(indices)
+                    break
+            yield tuple(itr[index] for index in indices)
 
-
-
-
-def test(lst):
-    for i in range(len(lst)):
-        for i2 in range(i,len(lst)):
-            print(lst[i],lst[i2])
+    def comb_with_replacement_time(self, itr, r):
+        return timeit.timeit(lambda: list(self.comb_with_replacement(itr, r)), number=10000)
 
 if __name__ == "__main__":
     g = Generator()
-    g.comb_with_replacement([1,2,3], 3)
+    a = list(g.comb_with_replacement([1,2,3,], 2))
     # a = list(g.default_comb([3,2,1,1], 2))
-    # for i in a:
-    #     print(i)
+    for i in a:
+        print(i)
+    print(g.comb_with_replacement_time([1,2,3,4], 3))
+    print(g.default_comb_with_replacement_time([1,2,3,4], 3))
     # print("\n")
     # a = list(g.default_comb_with_replacement([3,2,1,1], 2))
     # for i in a:
