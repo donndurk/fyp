@@ -1,16 +1,17 @@
 import itertools
 import timeit
+import random
 
 class Generator(object):
-    def default_perm(self, itr, r=None):
+    def itertools_permutations(self, itr, r=None):
         # Return successive r length permutations of elements in the iterable.
         return itertools.permutations(itr, r)
 
-    def default_perm_time(self, itr, r=None):
+    def itertools_permutations_time(self, itr, r=None):
         # Return the time taken to generate successive r length permutations of elements in the iterable.
-        return timeit.timeit(lambda: list(self.default_perm(itr, r)), number=10000)
+        return timeit.timeit(lambda: list(self.itertools_permutations(itr, r)), number=10000)
 
-    def lex_gen(self, itr):
+    def permutations(self, itr):  #TODO update to work based on indexes
         # Lexicographical permutation generator
         seq_length = len(itr)
         seq = list(sorted(itr))  # start with a sorted sequence
@@ -38,22 +39,42 @@ class Generator(object):
 
             yield seq
 
-    def lex_gen_time(self, itr):
-        return timeit.timeit(lambda: list(self.lex_gen(itr)), number=10000)
+    def permutations_time(self, itr):
+        return timeit.timeit(lambda: list(self.permutations(itr)), number=10000)
 
-    def default_comb(self, itr, r):
+    def itertools_combinations(self, itr, r):
         return itertools.combinations(itr, r)
 
-    def default_comb_time(self, itr, r):
-        return timeit.timeit(lambda: list(self.default_comb(itr, r)), number=10000)
+    def itertools_combinations_time(self, itr, r):
+        return timeit.timeit(lambda: list(self.itertools_combinations(itr, r)), number=10000)
 
-    def default_comb_with_replacement(self, itr, r):
+    def itertools_combinations_with_replacement(self, itr, r):
         return itertools.combinations_with_replacement(itr, r)
 
-    def default_comb_with_replacement_time(self, itr, r):
-        return timeit.timeit(lambda: list(self.default_comb_with_replacement(itr, r)), number=10000)
+    def itertools_combinations_with_replacement_time(self, itr, r):
+        return timeit.timeit(lambda: list(self.itertools_combinations_with_replacement(itr, r)), number=10000)
 
-    def comb_with_replacement(self, itr, r):
+    def combinations(self, itr, r):
+        indices = [0 for i in range(r)]
+        length = len(itr)
+
+        while sum(indices) != ((length - 1) * len(indices)):
+            curr_index = len(indices) - 1
+            while True:
+                indices[curr_index] += 1
+                if indices[curr_index] >= length:
+                    indices[curr_index] = 0
+                    curr_index -= 1
+                else:
+                    i = curr_index
+                    while i <= len(indices) - 1:
+                        indices[i] = indices[curr_index]
+                        i += 1
+                    break
+            if len(indices) == len(set(indices)):
+                yield tuple(itr[index] for index in indices)
+
+    def combinations_with_replacement(self, itr, r):
         indices = [0 for i in range(r)]
         length = len(itr)
 
@@ -67,20 +88,35 @@ class Generator(object):
                     indices[curr_index] = 0
                     curr_index -= 1
                 else:
+                    i = curr_index
+                    while i <= len(indices) - 1:
+                        indices[i] = indices[curr_index]
+                        i += 1
                     break
+            # print(indices)
             yield tuple(itr[index] for index in indices)
 
-    def comb_with_replacement_time(self, itr, r):
-        return timeit.timeit(lambda: list(self.comb_with_replacement(itr, r)), number=10000)
+    def combinations_with_replacement_time(self, itr, r):
+        return timeit.timeit(lambda: list(self.combinations_with_replacement(itr, r)), number=10000)
+
+    def random_permutation(self, itr):
+        itr = list(itr)
+        n = len(itr) - 1
+        i = 0
+        while i < n:
+            rand_num = random.randint(i, n)
+            itr[i], itr[rand_num] = itr[rand_num], itr[i]
+            i += 1
+        return itr
 
 if __name__ == "__main__":
     g = Generator()
-    a = list(g.comb_with_replacement([1,2,3,], 2))
+    # a = list(g.combinations([1,2,3,4], 2))
     # a = list(g.default_comb([3,2,1,1], 2))
-    for i in a:
-        print(i)
-    print(g.comb_with_replacement_time([1,2,3,4], 3))
-    print(g.default_comb_with_replacement_time([1,2,3,4], 3))
+    # for i in a:
+    #     print(i)
+    # print(g.comb_with_replacement_time([1,2,3,4], 3))
+    # print(g.default_comb_with_replacement_time([1,2,3,4], 3))
     # print("\n")
     # a = list(g.default_comb_with_replacement([3,2,1,1], 2))
     # for i in a:
@@ -90,3 +126,4 @@ if __name__ == "__main__":
     # print("Lex_gen time (5 values) = ", g.lex_gen_time(range(5)))
     # print("Default time (3 values) = ", g.default_perm_time([3,2,1]))
     # print("Lex_gen time (3 values) = ", g.lex_gen_time([3,2,1]))
+    print(g.random_permutation(range(6)))
