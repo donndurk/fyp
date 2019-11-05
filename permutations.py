@@ -1,37 +1,10 @@
 import itertools
+from math import factorial
 
 def itertools_permutations(itr, r=None):
     return itertools.permutations(itr, r)
 
-def permutations(itr):  # TODO update to work based on indexes
-    # Lexicographical permutation generator
-    seq_length = len(itr)
-    seq = list(sorted(itr))  # start with a sorted sequence
-    yield seq
-
-    # start looping to generate all permutations
-    while True:
-        # find longest weakly-decreasing suffix
-        i = seq_length - 1
-
-        while i > 0 and seq[i - 1] >= seq[i]:
-            i -= 1
-        # if i points to the first item, then the sequence has the highest value and is done
-        if i == 0:
-            return
-
-        # find the smallest item in the suffix, that is bigger than the pivot
-        j = len(seq) - 1
-        while seq[j] <= seq[i - 1]:
-            j -= 1
-
-        x = i - 1  # item immediately before suffix, called pivot
-        seq[x], seq[j] = seq[j], seq[x]  # swap pivot with item found in suffix
-        seq[i:] = seq[len(seq) - 1: i - 1: -1]  # reverse the suffix for the next smallest value in the sequence
-
-        yield seq
-
-def lex_permutations(itr, r=None):
+def lexicographical_1(itr, r=None):
     seq = list(itr)
     n = len(itr) if r is None else r
     indices = [i for i in range(n)]
@@ -56,8 +29,32 @@ def lex_permutations(itr, r=None):
 
         yield tuple(seq[index] for index in indices)
 
+def plain_changes(itr):
+    seq = list(itr)
+    n = len(seq)
+    a = generate(n, itr)
+    return list(a)
+
+def exch(lst, i, j):
+    # print("\t", lst ,i, j)
+    lst[i], lst[j] = lst[j], lst[i]
+
+def generate(n, lst):
+    if n == 1:
+        yield lst
+    c = 0
+    while c < n - 1:
+        exch(lst, c, n - 1)
+        generate(n - 1, lst)
+        exch(lst, c, n-1)
+        c += 1
+    generate(n - 1, lst)
+
+
 if __name__ == "__main__":
-    a = itertools_permutations([1, 2, 3], 3)
-    # a = lex_permutations([1,2,3], 1)
-    for i in a:
-        print(i)
+    # a = itertools_permutations([1, 2, 3, 4])
+    # b = lexicographical_1([1, 2, 3, 4])
+    # for i, j in zip(a, b):
+    #     print(i, j)
+    a = plain_changes([1,2,3])
+    print(a)
