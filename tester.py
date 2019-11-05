@@ -42,20 +42,22 @@ class Generator(object):
     def permutations_time(self, itr):
         return timeit.timeit(lambda: list(self.permutations(itr)), number=10000)
 
-    def itertools_combinations(self, itr, r):
+    def itertools_combinations(self, itr, r=None):
         return itertools.combinations(itr, r)
 
-    def itertools_combinations_time(self, itr, r):
+    def itertools_combinations_time(self, itr, r=None):
         return timeit.timeit(lambda: list(self.itertools_combinations(itr, r)), number=10000)
 
-    def itertools_combinations_with_replacement(self, itr, r):
+    def itertools_combinations_with_replacement(self, itr, r=None):
         return itertools.combinations_with_replacement(itr, r)
 
-    def itertools_combinations_with_replacement_time(self, itr, r):
+    def itertools_combinations_with_replacement_time(self, itr, r=None):
         return timeit.timeit(lambda: list(self.itertools_combinations_with_replacement(itr, r)), number=10000)
 
     def combinations(self, itr, r=None):
         n = len(itr) if r is None else r
+
+        itr = list(itr)
 
         if r > n:
             return
@@ -81,12 +83,16 @@ class Generator(object):
             if len(indices) == len(set(indices)):
                 yield tuple(itr[index] for index in indices)
 
+    def combinations_time(self, itr, r=None):
+        return timeit.timeit(lambda: list(self.combinations(itr, r)), number=10000)
+
     def combinations_with_replacement(self, itr, r=None):
         n = len(itr) if r is None else r
 
         if r > n:
             return
 
+        itr = list(itr)
         indices = [0 for i in range(n)]
         length = len(itr)
 
@@ -108,8 +114,8 @@ class Generator(object):
             # print(indices)
             yield tuple(itr[index] for index in indices)
 
-    def combinations_with_replacement_time(self, itr, r):
-        return timeit.timeit(lambda: list(self.combinations_with_replacement(itr, r)), number=10000)
+    def combinations_with_replacement_time(self, itr, r=None):
+        return timeit.timeit(lambda: list(self.combinations_with_replacement(itr, r)), number=10000) 
 
     def random_permutation(self, itr):
         itr = list(itr)
@@ -123,19 +129,13 @@ class Generator(object):
 
 if __name__ == "__main__":
     g = Generator()
-    a = list(g.combinations([1,2,3], 1))
+    # a = list(g.combinations([1,2,3], 1))
     # a = list(g.default_comb([3,2,1,1], 2))
-    for i in a:
-        print(i)
-    # print(g.comb_with_replacement_time([1,2,3,4], 3))
-    # print(g.default_comb_with_replacement_time([1,2,3,4], 3))
-    # print("\n")
-    # a = list(g.default_comb_with_replacement([3,2,1,1], 2))
     # for i in a:
     #     print(i)
-    # test([1,2,3,4])
-    # print("Default time (5 values) = ", g.default_perm_time(range(5)))
-    # print("Lex_gen time (5 values) = ", g.lex_gen_time(range(5)))
-    # print("Default time (3 values) = ", g.default_perm_time([3,2,1]))
-    # print("Lex_gen time (3 values) = ", g.lex_gen_time([3,2,1]))
+    # print("\n")
     # print(g.random_permutation(range(6)))
+    print(g.combinations_time([1,2,3,4], 3))
+    print(g.itertools_combinations_time([1,2,3,4], 3))
+    print(g.combinations_with_replacement_time([1,2,3,4], 3))
+    print(g.itertools_combinations_with_replacement_time([1,2,3,4], 3))
