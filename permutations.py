@@ -29,6 +29,34 @@ def lexicographical_1(itr, r=None):
 
         yield tuple(seq[index] for index in indices)
 
+def lexicographical_2(itr):
+    seq = list(itr)
+    r = len(seq)
+    indices = list(range(r))
+    # print(indices)
+    yield tuple(seq[index] for index in indices)
+
+    total_perms = factorial(r)
+    perm_count = 0
+
+    while perm_count != total_perms - 1:
+        curr_index = r - 1
+        while True:
+            # print(indices, curr_index)
+            # print(indices[curr_index])
+            indices[curr_index] += 1
+            if indices[curr_index] >= r:
+                indices[curr_index] = 0
+                curr_index -= 1
+            else:
+                if len(set(indices)) == r:
+                    # print(indices)
+                    break
+                else:
+                    curr_index = r - 1
+        perm_count += 1
+        yield tuple(seq[index] for index in indices)
+
 def plain_changes(itr):
     seq = list(itr)
     n = len(seq)
@@ -53,8 +81,10 @@ def generate(n, lst):
 
 if __name__ == "__main__":
     # a = itertools_permutations([1, 2, 3, 4])
-    # b = lexicographical_1([1, 2, 3, 4])
+    b = lexicographical_2([1, 2, 3])
     # for i, j in zip(a, b):
     #     print(i, j)
-    a = plain_changes([1,2,3])
-    print(a)
+    for i in b:
+        print(i)
+    # a = plain_changes([1,2,3])
+    # print(a)
